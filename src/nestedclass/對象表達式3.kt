@@ -16,7 +16,22 @@ class MyClass {
     }
 
     fun myTest() {
+        println(myObject.javaClass)
         myObject.output()
+    }
+}
+
+class MyClass2{
+    private fun method() = object {
+        val str = "hello"
+    }
+    //因為他是internal 不是private 所以匿名表達式會被當成public，所以沒辦法放問str2
+    internal fun method2() = object {
+        val str2 = "world"
+    }
+    fun test() {
+        val str = method().str
+        val str2 = method2()
     }
 }
 
@@ -25,3 +40,13 @@ fun main() {
     myClass.myTest()
 
 }
+
+
+
+
+
+
+
+
+
+
