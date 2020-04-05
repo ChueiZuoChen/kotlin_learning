@@ -1,5 +1,9 @@
 package delegation
 
+import java.lang.Exception
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
+
 /*
 *   關於屬性委託的要求:
 *
@@ -24,3 +28,72 @@ package delegation
 *   比如說，對於屬性prop來說，Kotlin編譯器所生成的隱含的屬性名為prop$delegate的屬性,
 *   然後對原有的prop屬性的訪問器的訪問都只是委託給了這個額外的Kotlin編譯器所產生的輔助屬性
 * */
+
+/*
+*   提供委託 (providing a delegate)
+*   通過定義 provideDelegate operator, 我們可以擴展委託的創建邏輯過程。
+*   如果對象定義了provideDelegate方法，那麼該方法就會被調用來創建屬性委託實例
+*
+* */
+
+class PropertyDelegate : ReadOnlyProperty<People, String> {
+    override fun getValue(thisRef: People, property: KProperty<*>): String {
+        return "hello wold"
+    }
+}
+
+/*  透過 provideDelegate方法可以先檢查People class 的property的屬性名字是不是等於"name"或是"address"，
+    如果是，就委託給PropertyDelegate去調用
+    如果不是，就拋出異常
+*/
+class PeopleLauncher{
+
+//    provideDelegate方法可以在委託之間造一道橋樑檢查屬性的狀態
+    operator fun provideDelegate(thisRef: People, property:KProperty<*>): ReadOnlyProperty<People,String>{
+        println("welcome")
+        when(property.name){
+            "name", "address" -> return PropertyDelegate()
+            else -> throw Exception("not valid name")
+        }
+    }
+}
+
+class People {
+    val name:String by PeopleLauncher()
+    val address:String by PeopleLauncher()
+}
+
+fun main() {
+    val people = People()
+    println(people.name)
+    println(people.address)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
